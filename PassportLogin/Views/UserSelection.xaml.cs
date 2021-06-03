@@ -1,7 +1,9 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using PassportLogin.Models;
+using PassportLogin.AuthService;
 using PassportLogin.Utils;
 
 namespace PassportLogin.Views
@@ -16,15 +18,18 @@ namespace PassportLogin.Views
 
         private void UserSelection_Loaded(object sender, RoutedEventArgs e)
         {
-            if (AccountHelper.AccountList.Count == 0)
+            List<UserAccount> accounts = AuthService.AuthService.Instance.GetUserAccountsForDevice(Helpers.GetDeviceId());
+
+            if (accounts.Any())
+            {
+                UserListView.ItemsSource = accounts;
+                UserListView.SelectionChanged += UserSelectionChanged;
+            }
+            else
             {
                 //If there are no accounts navigate to the LoginPage
                 Frame.Navigate(typeof(Login));
             }
-
-
-            UserListView.ItemsSource = AccountHelper.AccountList;
-            UserListView.SelectionChanged += UserSelectionChanged;
         }
 
         /// <summary>
@@ -35,7 +40,7 @@ namespace PassportLogin.Views
         {
             if (((ListView)sender).SelectedValue != null)
             {
-                Account account = (Account)((ListView)sender).SelectedValue;
+                UserAccount account = (UserAccount)((ListView)sender).SelectedValue;
                 if (account != null)
                 {
                     Debug.WriteLine("Account " + account.Username + " selected!");

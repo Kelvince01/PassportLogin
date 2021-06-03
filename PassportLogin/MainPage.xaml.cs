@@ -33,7 +33,6 @@ namespace PassportLogin
         private async void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
             // Load the local Accounts List before navigating to the UserSelection page
-            await AccountHelper.LoadAccountListAsync();
             Frame.Navigate(typeof(UserSelection));
         }
     }
